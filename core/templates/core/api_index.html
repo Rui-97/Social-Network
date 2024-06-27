@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% comment %}  I wrote this code  {% endcomment %}
+{% block title %}
+    API Index
+{% endblock  %}
+
+{% block content %}
+    {% include "navbar.html"%}
+    {% include "message.html"%}
+    <div class="container">
+        <div class="row text-center mt-5 mb-3">
+            <h2>API List</h2>
+        </div>
+        <div class="row col-10 mx-auto">
+        <ul class="list-group">
+            <li class="list-group-item"><strong>GET http://127.0.0.1:8000/api/users/ </strong>returns a list of all users: <a href="{%url "users_list_api"%}">http://127.0.0.1:8000/api/users/</a></li>
+            <li class="list-group-item"><strong>GET http://127.0.0.1:8000/api/user/[user_id]/ </strong> returns a specific user: <a href="{%url "user_detail_api" user.id%}">http://127.0.0.1:8000/api/user/{{user.id}}/</a></li>
+            <li class="list-group-item"><strong>GET http://127.0.0.1:8000/api/profiles/ </strong>returns a list of all profiles: <a href="{%url "profiles_list_api"%}">http://127.0.0.1:8000/api/profiles/</a></li>
+            <li class="list-group-item"><strong>GET http://127.0.0.1:8000/api/profile/[user_id]/ </strong> returns the profile for a given user: <a href="{%url "profile_detail_api" user.id%}">http://127.0.0.1:8000/api/profile/{{user.id}}/</a></li>
+            <li class="list-group-item"><strong>GET http://127.0.0.1:8000/api/posts/[user_id]/ </strong> returns a list of posts for a given user: <a href="{%url "posts_list_api" user.id%}">http://127.0.0.1:8000/api/posts/{{user.id}}/</a></li>
+        </ul>
+    </div>
+    </div>
+{% endblock  %}
+{% comment %} end of code I wrote {% endcomment %}

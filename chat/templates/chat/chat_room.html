@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% comment %}  I wrote this code  {% endcomment %}
+{% block title %}
+    Chat Room
+{% endblock  %}
+
+{% block content %}
+{% include "navbar.html"%}
+{% include "message.html"%}
+
+<div style="background-color: #eee;" >
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-6">
+        <div class="card">
+
+            <div class="card-header d-flex justify-content-between align-items-center p-3">
+                <h5 class="mb-0">{{reciver}}</h5>
+            </div>
+            
+            <div class="card-body" id="chat-log" data-mdb-perfect-scrollbar="true" style="overflow-y: scroll !important; height:70vh !important;">
+                {% for message in history_messages %}
+                    {% if message.sender == user %}
+                    <div class="d-flex flex-row justify-content-end">
+                        <div>
+                            <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">{{message.content}}</p>
+                            <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">{{message.timestamp|time:"H:i"}}</p>
+                        </div>
+                        <img src="{{message.sender.profile.image.url}}" class="rounded-circle" alt="Profile Picture" style="border-radius:50%; width:45px; height:45px;">
+                    </div>
+   
+                    {% else %}
+                    <div class="d-flex flex-row justify-content-start mb-4">
+                        <img src="{{message.sender.profile.image.url}}"  class="rounded-circle" alt="Profile Picture" style="border-radius:50%; width:45px; height:45px;">
+                        <div>
+                            <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">{{message.content }}</p>
+                            <p class="small ms-3 mb-3 rounded-3 text-muted">{{message.timestamp|time:"H:i"}}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                
+                {% endfor %}
+
+            </div>
+
+            <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+                <div class="input-group mb-0">
+                <input type="text" id="chat-message-input" class="form-control" placeholder="Type message"/>
+                <button class="btn btn-primary" type="button" id="send-btn" style="padding-top: .55rem;">Send</button>
+                </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ chatroom_id|json_script:"chatroom-id" }}
+{{ user.username|json_script:"username" }}
+
+
+<script>
+    const chatroomId = JSON.parse(document.getElementById('chatroom-id').textContent);
+    const currentUsername = JSON.parse(document.getElementById('username').textContent);
+
+    const chatMessageInputElem = document.getElementById("chat-message-input");
+    const sendBtnElem = document.getElementById("send-btn");
+    const chatLogElem = document.getElementById("chat-log");
+    
+    //set up web socket===============================================
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/${chatroomId}/`);
+
+    chatSocket.onopen = function(){
+        console.log("connection established")
+    }
+
+    chatSocket.onmessage = function(e){
+      const data = JSON.parse(e.data);
+      const localTime = new Date(data.timestamp).toLocaleTimeString(undefined, { hour12: false, hour: '2-digit', minute: '2-digit'  })
+      
+      let insertHTML;
+      if(data.sender === currentUsername){
+        insertHTML = `
+        <div class="d-flex flex-row justify-content-end">
+            <div>
+                <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">${data.message}</p>
+                <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">${localTime}</p>
+            </div>
+
+            <img src="{{user.profile.image.url}}" class="rounded-circle" alt="Profile Picture" style="border-radius:50%; width:45px; height:45px;">
+        </div>
+        `
+      }else{
+        insertHTML = `
+        <div class="d-flex flex-row justify-content-start mb-4">
+            <img src="{{reciver.profile.image.url}}"  class="rounded-circle" alt="Profile Picture" style="border-radius:50%; width:45px; height:45px;">
+            <div>
+                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">${data.message}</p>
+                <p class="small ms-3 mb-3 rounded-3 text-muted">${localTime}</p>
+            </div>
+        </div>
+      `
+      }
+      chatLogElem.insertAdjacentHTML("beforeend",insertHTML);
+    }
+
+    chatSocket.onclose = function(e){
+      console.error('Chat socket closed unexpectedly');
+    }
+
+    chatMessageInputElem.addEventListener("keyup",(e)=>{
+        //click the submit button, if the return key is released
+        if(e.keyCode === 13) sendBtnElem.click(); 
+    }) 
+
+    
+    sendBtnElem.addEventListener("click", (e)=>{
+      const messageSend = chatMessageInputElem.value;
+        //send the message in JSON to the sever 
+        chatSocket.send(JSON.stringify({
+            chatroomId:chatroomId,
+            message: messageSend,
+        }));
+
+        //reset the chat message input
+        chatMessageInputElem.value ="";
+    })
+</script>
+{% endblock  %}
+{% comment %} end of code I wrote {% endcomment %}

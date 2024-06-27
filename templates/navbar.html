@@ -1,0 +1,60 @@
+{% comment %}  I wrote this code {% endcomment %}
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="">ConnectHub</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="fs-5 collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "home" user.id %}">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "profile" user.id %}">Profile</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "chat_list"%}">Chat</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "api_index"%}">API</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+                </li>
+                
+                <li class="nav-item">
+                    <form action="{% url "search"%}" method="GET" class="form-inline my-2 my-lg-0">
+                        <div class="input-group">
+                            <input class="form-control" type="search" placeholder="Search Users" name="search">
+                            <button class="btn btn-outline-light ms-2" type="submit">Search</button>
+                        </div>
+                    </form>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                        <div class="mr-2">
+                            <img src="{{ user.profile.image.url}}" class="rounded-circle" alt="Profile Picture" style="border-radius:50%; width:50px; height:50px;">
+                        </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link my-0" href="{% url "profile_update" user.id %}">{{user.username}}</a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+{% comment %}  end of code I wrote {% endcomment %}
+
+
+

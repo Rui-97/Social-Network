@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% comment %}  I wrote this code {% endcomment %}
+{% load bootstrap_icons %}
+
+
+{% block title %}
+    Chat List
+{% endblock  %}
+
+{% block content %}
+{% include "navbar.html"%}
+{% include "message.html"%}
+
+<div class="container">
+
+    {% if  profile.followed_by.all.exists%}
+        <div class="row mt-3 d-flex justify-content-center">
+            <div class="col-6">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    Click the chat icon to start chatting with your followers!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        {% for follower in profile.followed_by.all%}
+        {% if follower.user.id != profile.user.id%}
+        <div class="row d-flex justify-content-center mt-2">
+            <div class="col-6">
+                <div class="card mb-3">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-auto">
+                        <img src="{{follower.image.url}}" class="img-fluid rounded-start" alt="..." style="width:150px; height:150px">
+                        </div>
+
+                        <div class="col-8">
+                            <div class="card-body">
+                                <a href="{% url "profile" follower.user.id%}" class="card-title link-dark text-decoration-none h3">{{follower | title}}</a> 
+                            </div>
+                        </div>
+
+                        <div class="col-auto text-end">
+                            {% if follower.user.username > user.username%}
+                                {% with follower.user.username|add:"_"|add:user.username as chatroom_name %}
+                                <a href="{%url "chatroom" chatroom_name %}" class="button card-title">{% bs_icon 'chat-dots-fill' size='2em'%}</a>
+                                {% endwith %}
+                            {% else %}
+                                {% with user.username|add:"_"|add:follower.user.username as chatroom_name %}
+                                <a href="{%url "chatroom" chatroom_name %}" class="button card-title">{% bs_icon 'chat-dots-fill' size='2em'%}</a>
+                                {% endwith %}
+                            {% endif %}                                
+                                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    {% else %}
+        <div class="row mt-3 d-flex justify-content-center">
+            <div class="col-6">
+                <p>You are not following any users. Follow other users and chat with them!</p>
+        </div>
+        </div>
+    {% endif %}
+</div>
+
+    
+{% endblock  %}
+ {% comment %} end of code I wrote {% endcomment %}

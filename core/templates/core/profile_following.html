@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% comment %}  I wrote this code {% endcomment %}
+{% block title %}
+{{profile.user.username | title}} Following
+{% endblock  %}
+
+{% block content %}
+{% include  "navbar.html"%}
+{% include "message.html"%}
+
+<div class="container">
+    <div class="row my-4 align-items-center">
+        <div class="col-4">
+            {% if user.id == profile.user.id%}
+            <h1>My Following</h1>
+            {% else %}
+            <h1>{{profile.user.username | title}}'s Following</h1>
+            {% endif %}
+        </div>
+        <div class="col-2 ">
+            <a href="{% url "profile" profile.user.id%}" class="btn btn-outline-dark">Back to Profile</a>
+        </div>
+    </div>
+
+    {% for following in profile.follows.all%}
+    {% if following.user.id != profile.user.id%}
+ 
+    <div class="card mb-3" style="max-width: 600px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+        <img src="{{following.image.url}}" class="img-fluid rounded-start" alt="..." style="width:200px; height:200px">
+        </div>
+        <div class="col-md-8">
+        <div class="card-body">
+            <a href="{% url "profile" following.user.id%}" class="card-title link-dark text-decoration-none h3 stretched-link">{{following | title}}</a> 
+            <p class="card-text mt-2">{{following.bio}}</p>
+        </div>
+        </div>
+    </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock  %}
+{% comment %} end of code I wrote {% endcomment %}
